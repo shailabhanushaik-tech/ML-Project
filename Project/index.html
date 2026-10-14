@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kidney Disease Risk Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
+    <div class="container">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Kidney health · Screening workspace</p>
+          <h1>Risk overview</h1>
+          <p class="hero-copy">Explore patient markers and review an educational screening indicator.</p>
+        </div>
+        <div class="model-status" id="modelStatus" role="status">
+          <span class="status-dot"></span>
+          <span><strong>Model status</strong><br /><span id="modelStatusText">Checking availability...</span></span>
+        </div>
+      </header>
+
+      <nav class="accessibility-toolbar" aria-label="Display options">
+        <span>Display options</span>
+        <button type="button" class="secondary" id="largeTextToggle" aria-pressed="false">Larger text</button>
+        <button type="button" class="secondary" id="contrastToggle" aria-pressed="false">High contrast</button>
+        <button type="button" class="secondary" id="motionToggle" aria-pressed="false">Reduce motion</button>
+      </nav>
+
+      <main id="mainContent">
+        <section class="panel cohort-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Dataset</p>
+              <h2>Cohort snapshot</h2>
+            </div>
+            <span>Marker prevalence in the loaded records</span>
+          </div>
+          <div class="cohort-bars" id="cohortBars" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Patient review</p>
+              <h2>Screening profile</h2>
+            </div>
+            <span>Use measured values where available</span>
+          </div>
+
+          <div class="profile-bar" aria-label="Quick patient profiles">
+            <button type="button" class="preset-btn active" data-profile="healthy">Healthy profile</button>
+            <button type="button" class="preset-btn" data-profile="moderate">Moderate risk</button>
+            <button type="button" class="preset-btn" data-profile="high">High risk</button>
+            <button type="button" class="preset-btn" data-profile="custom">Custom input</button>
+          </div>
+
+          <div class="meter-card">
+            <div class="meter-header">
+              <span>Educational indicator</span>
+              <strong id="meterLabel">Low Risk</strong>
+            </div>
+            <div class="meter-track">
+              <div id="meterFill" class="meter-fill low"></div>
+            </div>
+            <div class="meter-scale">
+              <span>0%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+
+          <section class="what-if-panel" aria-labelledby="whatIfTitle">
+            <div class="subsection-heading">
+              <div>
+                <p class="section-kicker">Explore</p>
+                <h3 id="whatIfTitle">What if these values changed?</h3>
+              </div>
+              <span>Adjust either control to update the form and indicator.</span>
+            </div>
+            <div class="slider-grid">
+              <label for="ageSlider">
+                <span>Age <output id="ageSliderValue" for="ageSlider">32</output></span>
+                <input id="ageSlider" type="range" min="1" max="120" value="32" />
+              </label>
+              <label for="bpSlider">
+                <span>Blood pressure <output id="bpSliderValue" for="bpSlider">72 mmHg</output></span>
+                <input id="bpSlider" type="range" min="40" max="200" value="72" />
+              </label>
+            </div>
+          </section>
+
+          <div class="form-progress" aria-live="polite">
+            <div class="progress-copy">
+              <span id="stepLabel">Step 1 of 3 · Personal &amp; history</span>
+              <span id="progressPercent">33%</span>
+            </div>
+            <div class="progress-track" role="progressbar" id="formProgress" aria-label="Form progress" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1">
+              <span id="progressFill"></span>
+            </div>
+          </div>
+
+          <form id="riskForm" class="risk-form">
+            <section class="form-step active" data-step="0" aria-label="Personal and medical history">
+              <h3>Personal &amp; medical history</h3>
+              <p class="step-hint">Use known information. You can change these values at any time.</p>
+              <div class="field-grid">
+              <label>
+                <span>Age</span>
+                <input id="age" type="number" min="1" max="120" value="52" data-required />
+              </label>
+
+              <label>
+                <span>Blood pressure <small>(mmHg)</small></span>
+                <input id="bp" type="number" min="40" max="200" value="92" data-required />
+              </label>
+
+              <label>
+                <span>Hypertension history</span>
+                <select id="htn">
+                  <option value="no" selected>No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Diabetes history</span>
+                <select id="dm">
+                  <option value="no" selected>No</option>
+                  <option value="yes">Yes</option>
+                </select>
+              </label>
+              </div>
+            </section>
+
+            <section class="form-step" data-step="1" aria-label="Urine test markers" hidden>
+              <h3>Urine test markers</h3>
+              <p class="step-hint">Enter values from a test report if you have one.</p>
+              <div class="field-grid">
+              <label>
+                <span>Specific gravity</span>
+                <input id="sg" type="number" min="1.000" max="1.050" step="0.001" value="1.015" data-required />
+              </label>
+
+              <label>
+                <span>Albumin <small>(0-5)</small></span>
+                <input id="al" type="number" min="0" max="5" value="1" data-required />
+              </label>
+
+              <label>
+                <span>Urine sugar <small>(0-5)</small></span>
+                <input id="su" type="number" min="0" max="5" value="0" data-required />
+              </label>
+
+              <label>
+                <span>Red blood cells</span>
+                <select id="rbc">
+                  <option value="normal">Normal</option>
+                  <option value="abnormal" selected>Abnormal</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Pus cells</span>
+                <select id="pc">
+                  <option value="normal">Normal</option>
+                  <option value="abnormal" selected>Abnormal</option>
+                </select>
+              </label>
+
+              </div>
+            </section>
+
+            <section class="form-step" data-step="2" aria-label="Additional markers" hidden>
+              <h3>Additional markers</h3>
+              <p class="step-hint">Complete any available information, then review the educational summary.</p>
+              <div class="field-grid">
+              <label>
+                <span>Pus cell clumps</span>
+                <select id="pcc">
+                  <option value="notpresent" selected>Not Present</option>
+                  <option value="present">Present</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Bacteria</span>
+                <select id="ba">
+                  <option value="notpresent" selected>Not Present</option>
+                  <option value="present">Present</option>
+                </select>
+              </label>
+              <label>
+                <span>Appetite</span>
+                <select id="appet">
+                  <option value="good" selected>Good</option>
+                  <option value="poor">Poor</option>
+                </select>
+              </label>
+              </div>
+            </section>
+
+            <div class="actions wizard-actions">
+              <button type="button" class="secondary" id="previousStep" disabled>Back</button>
+              <button type="button" id="nextStep">Continue</button>
+              <button type="submit" id="reviewProfile" hidden>Review profile</button>
+              <button type="reset" class="secondary">Reset</button>
+            </div>
+          </form>
+
+          <div id="predictionResult" class="result-box hidden"></div>
+          <div id="reportDetails" class="report-details"></div>
+          <div id="riskSignals" class="risk-signals"></div>
+
+          <section class="compare-panel" aria-labelledby="compareTitle">
+            <div class="subsection-heading compare-heading">
+              <div>
+                <p class="section-kicker">Compare</p>
+                <h3 id="compareTitle">Compare with an example profile</h3>
+              </div>
+              <label for="compareProfile">Example profile</label>
+              <select id="compareProfile">
+                <option value="healthy">Healthy example</option>
+                <option value="moderate">Moderate example</option>
+                <option value="high">High-indicator example</option>
+              </select>
+            </div>
+            <div class="comparison-grid" id="profileComparison" aria-live="polite"></div>
+            <p class="step-hint">Example scores use this page’s simple educational indicator; they are not clinical predictions.</p>
+          </section>
+
+          <p class="medical-note">For educational use only. This tool is not a diagnosis or a substitute for a qualified clinician.</p>
+        </section>
+
+        <section class="panel marker-guide" aria-labelledby="markerGuideTitle">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Learn</p>
+              <h2 id="markerGuideTitle">Understand the markers</h2>
+            </div>
+            <span>Select a marker to read a plain-language description.</span>
+          </div>
+          <div class="marker-list">
+            <details><summary>Age</summary><p>Age is included as a broad context marker in this educational scoring example. Age alone cannot diagnose kidney disease.</p></details>
+            <details><summary>Blood pressure</summary><p>Blood pressure is the force of blood against artery walls. Persistently high readings should be discussed with a healthcare professional.</p></details>
+            <details><summary>Specific gravity</summary><p>Urine specific gravity reflects how concentrated a urine sample is. It can vary with hydration and other factors, so it needs clinical context.</p></details>
+            <details><summary>Albumin</summary><p>Albumin is a protein. Its presence in urine can be one reason a clinician may order follow-up testing.</p></details>
+            <details><summary>Urine sugar</summary><p>Sugar detected in urine can have several explanations and should be interpreted alongside appropriate blood tests and clinical advice.</p></details>
+            <details><summary>Red blood cells</summary><p>Red blood cells in urine may have many causes. A single result is not enough to determine a diagnosis.</p></details>
+            <details><summary>Pus cells</summary><p>Pus cells are white blood cells seen in urine tests and can be associated with inflammation or infection, among other causes.</p></details>
+            <details><summary>Pus cell clumps</summary><p>This dataset marker records whether pus-cell clumps were reported. Ask a clinician to interpret it with the full test report.</p></details>
+            <details><summary>Bacteria</summary><p>Bacteria reported in a urine sample may need interpretation alongside symptoms and sample collection details.</p></details>
+            <details><summary>Hypertension history</summary><p>This records whether a history of high blood pressure is reported. It is one contextual marker, not a diagnosis.</p></details>
+            <details><summary>Diabetes history</summary><p>This records whether a history of diabetes is reported. A clinician considers it alongside many other health factors.</p></details>
+            <details><summary>Appetite</summary><p>Appetite is a general symptom and is not specific to kidney conditions. Many unrelated factors can affect it.</p></details>
+          </div>
+        </section>
+
+        <section class="panel quiz-panel" aria-labelledby="quizTitle">
+          <div class="panel-header">
+            <div>
+              <p class="section-kicker">Quick activity</p>
+              <h2 id="quizTitle">Kidney health knowledge check</h2>
+            </div>
+            <span>Optional · 3 questions</span>
+          </div>
+          <div id="quizContent" aria-live="polite"></div>
+          <div class="quiz-actions">
+            <span id="quizProgress"></span>
+            <button type="button" class="secondary" id="restartQuiz" hidden>Try again</button>
+          </div>
+        </section>
+      </main>
+      <footer class="page-footer">
+        <span>Kidney health screening workspace</span>
+        <button type="button" class="text-button" id="printReport">Print summary</button>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
